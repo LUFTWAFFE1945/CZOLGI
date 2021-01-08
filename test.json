@@ -1,0 +1,14 @@
+{
+    "status": "Success", 
+    "payload": 
+    {
+        "name": "First world 20", 
+        "current_x": 4, 
+        "current_y": 3, 
+        "current_session": "fc7904e0-2ee1-4285-978c-40772e6c0c2e", 
+        "direction": "W", 
+        "step": 238, 
+        "field_type": "grass", 
+        "field_bonus": ""
+    }
+}
