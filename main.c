@@ -3,8 +3,6 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "../cJSON/cJSON.h"
-#include "macierze.h"
-
 typedef struct test{
     int wartosc_x;
     int wartosc_y;
@@ -149,9 +147,7 @@ char * make_request(char *url)
         free(chunk.response);
         curl_easy_cleanup(curl);
     }
-
 }
-
 int info(char *token) {
  
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/token
@@ -191,32 +187,33 @@ int rotate(char *token, char *direction)
  
 int main(int argc, char **argv)
 {
-    printf("isntrukcja poruszania:\n");
+   printf("witaj w misji rozpoznania terenu wroga :\n");
+    printf("zasiądź za sterem czołgu i ruszaj na misję:\n");
+    printf("sterowanie czołgiem:\n");
     printf("w -do przodu\n");
-    printf("d -obrót w prawo\n");
+    printf("s -do tyłu\n");
     printf("a -obrót w lewo\n");
+    printf("d -obrót w prawo\n");
     printf("i -info\n");
+     printf("powodzenia\n");
     char znak;
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
     znak = getchar();
     if (znak == 'w')
     move(swiat);
-    else if (znak == 'r')
+    else if (znak == 's')
+   {
+        rotate(swiat,"right");
+        rotate(swiat,"right");
+         move(swiat);
+   }
+    else if (znak == 'd')
     rotate(swiat,"right");
     else if (znak =='a')
     rotate(swiat,"left");
     else if (znak =='i')
     info(swiat);
 
-
-    macierz*maciora;
-    maciora = wczytaj(2,2);
-    FILE*wynik;
-    wynik = fopen("wynik.txt","w+");
-    wypisz(maciora);
-    zapisz(wynik,maciora);
-    zwolnij(maciora);
-    fclose(wynik);
     return 0;
 }

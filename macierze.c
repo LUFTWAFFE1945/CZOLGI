@@ -3,10 +3,11 @@
 #include <string.h>
 #include "macierze.h"
 
-
 void wypisz(macierz *m){
 {
+
 printf("To jest wynik\n[");
+
 for(int i = (m->r)-1; i >= 0;  i--)
     {
         for(int j = 0; j < m->c; j++)
@@ -44,16 +45,20 @@ macierz* wczytaj(int a, int b){
 }
 
 void realokacja(macierz*m,int a, int b){
+    m->r=0;
     m->r=a;
+    m->c=0;
     m->c=b;
-    m->tab = (int**) realloc(m,sizeof(int*) * m->r);
+     printf("%d %d\n",m->r,m->c);
+    m->tab = (int**) realloc (m->tab, sizeof(int*) * m->r);
     for (int i=0;i<m->r;i++)
-        m->tab[i] = (int*) realloc(m,sizeof(int) * m->c);
+        m->tab[i] = (int*) realloc(m->tab[i], sizeof(int) * m->c);
 }
+    
 
 void zwolnij( macierz *m){
-    for (int i=0;i<m->r;i++) 
+    for (int i=0;i<m->c;i++) 
     free(m->tab[i]);
     free(m->tab);
     free(m);
-}
+} 
