@@ -3,12 +3,21 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "../cJSON/cJSON.h"
+#include "macierze.h"
 typedef struct test{
     int wartosc_x;
     int wartosc_y;
     char *podloze;
     
 } TEST;
+
+int wizualizacja(int x,int y,char*rodzaj,macierz*m){
+realokacja(m,x,y);
+
+
+
+return 0;
+}
 
 int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
 {
@@ -47,6 +56,8 @@ int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
         dane->wartosc_x=x->valueint;
         dane->wartosc_y=y->valueint;
         dane->podloze =field_type->valuestring;
+        status = 1;
+        goto end;
 
         /*if (!cJSON_IsNumber(width) || !cJSON_IsNumber(height))
         {
@@ -139,7 +150,7 @@ char * make_request(char *url)
             //printf("TUTAJ:%s", chunk.response);
             TEST t;
             parse_json(chunk.response, &t);
-            //my_function(t);
+            wizualizacja(t.wartosc_x,t.wartosc_y,t.podloze,&z);
             printf("t.x= %d\n",t.wartosc_x);
         }
  
@@ -151,7 +162,7 @@ char * make_request(char *url)
 int info(char *token) {
  
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/token
-    char *url = (char*)malloc(sizeof(char*));
+    char *url = (char*)malloc(sizeof(char)*100);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info");
     strcat(url,"/");
     strcat(url,token);
@@ -162,19 +173,21 @@ int info(char *token) {
  
 int move(char *token) {
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/move/token
-    char *url = (char*)malloc(sizeof(char*));
+    char *url = (char*)malloc(sizeof(char)*100);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/move");
     strcat(url,"/");
     strcat(url,token);
     make_request(url);
+    printf("dupa1\n");
     free(url);
+    printf("dupa2\n");
     return 0;
 }
  
 int rotate(char *token, char *direction)
 {
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/rotate/token/direction
-    char *url = (char*)malloc(sizeof(char*));
+    char *url = (char*)malloc(sizeof(char)*100);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/rotate");
     strcat(url,"/");
     strcat(url,token);
@@ -195,15 +208,17 @@ int main(int argc, char **argv)
     printf("a -obrót w lewo\n");
     printf("d -obrót w prawo\n");
     printf("i -info\n");
-     printf("powodzenia\n");
+    printf("powodzenia\n");
     char znak;
+    macierz*m=wczytaj(1,1);
+    printf("%d %d\n",m->r,m->c);
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
-    znak = getchar();
+    for(int i=0;i<12;i++){
+           scanf(" %c",&znak);
     if (znak == 'w')
     move(swiat);
-    else if (znak == 's')
-   {
+    else if (znak == 's'){
         rotate(swiat,"right");
         rotate(swiat,"right");
          move(swiat);
@@ -214,6 +229,11 @@ int main(int argc, char **argv)
     rotate(swiat,"left");
     else if (znak =='i')
     info(swiat);
+    else if (znak =='r')
+    exit(0);
+    }
+
+
 
     return 0;
 }
