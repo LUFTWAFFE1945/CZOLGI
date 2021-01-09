@@ -3,10 +3,13 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "../cJSON/cJSON.h"
+#include "macierze.h"
+
 typedef struct test{
     int wartosc_x;
     int wartosc_y;
     char *podloze;
+    
 } TEST;
 
 int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
@@ -146,7 +149,9 @@ char * make_request(char *url)
         free(chunk.response);
         curl_easy_cleanup(curl);
     }
+
 }
+
 int info(char *token) {
  
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/token
@@ -186,43 +191,32 @@ int rotate(char *token, char *direction)
  
 int main(int argc, char **argv)
 {
- 
-   /*char buffer[2048];
-   printf("1\n");
-	FILE *f = fopen("test.json", "r");
-	printf("2\n");
-    fread(buffer,1,2048,f);
-    printf("3\n");
-	fclose(f);
-	printf("%d\n",parse_json(buffer)); 
-    printf("4\n");*/
-
+    printf("isntrukcja poruszania:\n");
+    printf("w -do przodu\n");
+    printf("d -obrót w prawo\n");
+    printf("a -obrót w lewo\n");
+    printf("i -info\n");
+    char znak;
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
-    // char *url;
-    if (argc==1)
-    {
-        printf("podaj operacje!\n");
-        printf("Move - \"M\"; Rotate - \"Rr/Rl\"; Info - \"info\"\n");
-    }
-    else
-    for (int i=1;i<argc;i++)
-    {
-        if(strcmp(argv[i],"M")==0)
-        move(swiat);
-        else if(strcmp(argv[i],"Rr")==0)
-        rotate(swiat,"right");
-        else if(strcmp(argv[i],"Rl")==0)
-        rotate(swiat,"left");
-        else if(strcmp(argv[i],"info")==0)
-        info(swiat);
-        else
-        {
-        printf("podaj operacje!\n");
-        printf("Move - \"M\"; Rotate - \"Rr/Rl\"; Info - \"info\"\n");
-        }
-    }
-    // char *url = argc < 2 ? "http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/qwerty_20" : argv[1];
- 
+    znak = getchar();
+    if (znak == 'w')
+    move(swiat);
+    else if (znak == 'r')
+    rotate(swiat,"right");
+    else if (znak =='a')
+    rotate(swiat,"left");
+    else if (znak =='i')
+    info(swiat);
+
+
+    macierz*maciora;
+    maciora = wczytaj(2,2);
+    FILE*wynik;
+    wynik = fopen("wynik.txt","w+");
+    wypisz(maciora);
+    zapisz(wynik,maciora);
+    zwolnij(maciora);
+    fclose(wynik);
     return 0;
 }
