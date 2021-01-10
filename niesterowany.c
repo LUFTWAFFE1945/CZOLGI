@@ -265,46 +265,22 @@ int rotate(char *token, char *direction)
  
 int main(int argc, char **argv)
 {
-  /* printf("witaj w misji rozpoznania terenu wroga :\n");
-    printf("zasiądź za sterem czołgu i ruszaj na misję:\n");
-    printf("sterowanie czołgiem:\n");
-    printf("w -do przodu\n");
-    printf("s -do tyłu");
-    printf("a -obrót w lewo\n");
-    printf("d -obrót w prawo\n");
-    printf("i -info\n");
-     printf("powodzenia\n");
+    FILE*plik=fopen("macierz.txt","w+");
+    fprintf(plik,"1\n1\n1\n");
+    fclose(plik);
     char znak;
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
-    znak = getchar();
-    if (znak == 'w')
-    move(swiat);
-    else if (znak == 's')
-   {
-        rotate(swiat,"right");
-        rotate(swiat,"right");
-         move(swiat);
-   }
-    else if (znak == 'r')
     rotate(swiat,"right");
-    else if (znak ='a')
-    rotate(swiat,"left");
-    else if (znak ='i')
+    rotate(swiat,"right");
+    move(swiat);
     info(swiat);
-*/
-    //char znak;
-    /*tu musimy 
-    zrobić macierz 1 na 1
-    teraz zapisujemy do pliku
-    usuwamy macierz*/
-    char *swiat=(char*)malloc(sizeof(char*));
-    strcpy(swiat,"qwerty_20");
     move(swiat);
-    move(swiat);
+    info(swiat);
     move(swiat);
     rotate(swiat,"right");
     move(swiat);
+    free(swiat);
     return 0;
 }
 

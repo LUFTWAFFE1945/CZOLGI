@@ -1,5 +1,6 @@
 all:
-	cc tankv3.c -o hitler ../cJSON/cJSON.o -lcurl 
+	cc sterowany.c -o sterowany ../cJSON/cJSON.o -lcurl 
+	cc niesterowany.c -o niesterowany ../cJSON/cJSON.o -lcurl 
 
 
 
