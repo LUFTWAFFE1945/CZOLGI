@@ -1,3 +1,6 @@
+/*program uruchumiony przez valgrind działa dobrze, bez valgrinda zapełnia macierz losowymi liczbami*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,36 +32,36 @@ void wizualizacja(int x, int y, char*pole){
     for (int i=0;i<m->r;i++)
     m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
     // wczytanie
-    for (int i=m->r-1; i >=0; i--) 
+    for (int i=(m->r)-1; i >=0; i--) 
     {
         for (int j=0; j < m->c; j++) 
         {
             fscanf(plik, "%d", &m->tab[i][j]);
         }
     }
-
+    printf("%d %d\n",m->r,m->c);
     //warunek realokacji 
     if(m->r < x)
     m->r=x;
     if(m->c < y)
     m->c=y;  
-     printf("dupa %d %d\n",m->r,m->c); //pokazuje aktualne rozmiary macierzy
+    printf("%d %d\n",m->r,m->c); //pokazuje aktualne rozmiary macierzy
     //realokacja
     m->tab = (int**) realloc (m->tab, sizeof(int*) * (m->r));
     for (int i=0;i<m->r;i++)
         m->tab[i] = (int*) realloc(m->tab[i], sizeof(int) * (m->c));
-         printf("dupa2%d %d\n",m->r,m->c);
+         printf("%d %d\n",m->r,m->c);
     //uzupelnienie macierzy
-    if(pole == 'grass')
+    if(pole = "grass")
     m->tab[x-1][y-1]=1;
-    if(pole == 'sand')
+    if(pole == "sand")
     m->tab[x-1][y-1]=2;
-    if(pole == 'wall')
+    if(pole == "wall")
     m->tab[x-1][y-1]=3;
-    printf("dupa3 %d %d\n",m->r,m->c);
+    printf("%d %d\n",m->r,m->c);
     FILE*plik2=fopen("macierz.txt","w");
     fprintf(plik2,"%d\n%d\n",m->r,m->c);
-    for(int i = 0; i < m->r; i++)
+    for(int i = (m->r)-1; i>=0; i--)
         for(int j = 0; j <m->c; j++)
         {
             fprintf(plik2,"%d\t",m->tab[i][j]);
@@ -76,22 +79,6 @@ void wizualizacja(int x, int y, char*pole){
   
 
 }
-
-/*
-funkcjia do wizualizacji     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-{
-interpretacja stingów na int np gras = 1
-otwiera plik
-zczytuje dane
-maloc funkcji
-wypełnienie macierzy danymi z pliku
-sprawdzamy nowe wymiray ifami
-reaokacja
-uzupełnienie nowymi danymi
-zapis do pliku o twj samej nazwie
-zwolnij macierz    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-}
-*/
 
 int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
 {
@@ -242,7 +229,7 @@ char * make_request(char *url)
 int info(char *token) {
  
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/token
-    char *url = (char*)malloc(sizeof(char*));
+    char *url = (char*)malloc(sizeof(char*)*1024);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info");
     strcat(url,"/");
     strcat(url,token);
@@ -253,7 +240,7 @@ int info(char *token) {
  
 int move(char *token) {
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/move/token
-    char *url = (char*)malloc(sizeof(char*));
+    char *url = (char*)malloc(sizeof(char*)*1024);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/move");
     strcat(url,"/");
     strcat(url,token);
@@ -265,7 +252,7 @@ int move(char *token) {
 int rotate(char *token, char *direction)
 {
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/rotate/token/direction
-    char *url = (char*)malloc(sizeof(char*));
+    char *url = (char*)malloc(sizeof(char*)*1024);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/rotate");
     strcat(url,"/");
     strcat(url,token);
