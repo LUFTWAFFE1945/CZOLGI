@@ -3,21 +3,95 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "../cJSON/cJSON.h"
-#include "macierze.h"
+
 typedef struct test{
     int wartosc_x;
     int wartosc_y;
-    char *podloze;
+    char podloze[10];
     
 } TEST;
 
-int wizualizacja(int x,int y,char*rodzaj,macierz*m){
-realokacja(m,x,y);
+typedef struct _macierz {
+int r; //wiersz
+int c; //kolumna
+int **tab;
+}macierz;
 
+void wizualizacja(int x, int y, char*pole){
+    // alokacja
+    FILE*plik=fopen("macierz.txt","r");
+    macierz *m;
+    printf("%d %d %s\n",x,y,pole);
+    m=(macierz*) malloc(sizeof(macierz));
+    fscanf(plik, "%d", &m->r);
+    fscanf(plik, "%d", &m->c);
+    m->tab = (int**) calloc(m->r, sizeof(int*));
+    for (int i=0;i<m->r;i++)
+    m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
+    // wczytanie
+    for (int i=m->r-1; i >=0; i--) 
+    {
+        for (int j=0; j < m->c; j++) 
+        {
+            fscanf(plik, "%d", &m->tab[i][j]);
+        }
+    }
 
+    //warunek realokacji 
+    if(m->r < x)
+    m->r=x;
+    if(m->c < y)
+    m->c=y;  
+     printf("dupa %d %d\n",m->r,m->c); //pokazuje aktualne rozmiary macierzy
+    //realokacja
+    m->tab = (int**) realloc (m->tab, sizeof(int*) * (m->r));
+    for (int i=0;i<m->r;i++)
+        m->tab[i] = (int*) realloc(m->tab[i], sizeof(int) * (m->c));
+         printf("dupa2%d %d\n",m->r,m->c);
+    //uzupelnienie macierzy
+    if(pole == 'grass')
+    m->tab[x-1][y-1]=1;
+    if(pole == 'sand')
+    m->tab[x-1][y-1]=2;
+    if(pole == 'wall')
+    m->tab[x-1][y-1]=3;
+    printf("dupa3 %d %d\n",m->r,m->c);
+    FILE*plik2=fopen("macierz.txt","w");
+    fprintf(plik2,"%d\n%d\n",m->r,m->c);
+    for(int i = 0; i < m->r; i++)
+        for(int j = 0; j <m->c; j++)
+        {
+            fprintf(plik2,"%d\t",m->tab[i][j]);
+            if(j+1 == m->c)
+            fprintf(plik2,"\n");
+        }  
+    fclose(plik2);
+    //zwolnienie macierzy
+    for (int i=0;i<m->r;i++) 
+    free(m->tab[i]);
+    free(m->tab);
+    free(m); 
+    //zamkniecie nie wiem czemu tu ale jak dam wczesniej to program spada z rowerka
+    fclose(plik);
+  
 
-return 0;
 }
+
+/*
+funkcjia do wizualizacji     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+{
+interpretacja stingów na int np gras = 1
+otwiera plik
+zczytuje dane
+maloc funkcji
+wypełnienie macierzy danymi z pliku
+sprawdzamy nowe wymiray ifami
+reaokacja
+uzupełnienie nowymi danymi
+zapis do pliku o twj samej nazwie
+zwolnij macierz    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+*/
 
 int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
 {
@@ -55,7 +129,9 @@ int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
         printf("Payload:field_type: %s\n",field_type->valuestring);
         dane->wartosc_x=x->valueint;
         dane->wartosc_y=y->valueint;
-        dane->podloze =field_type->valuestring;
+        strcpy(dane->podloze, field_type->valuestring);
+       // dane->podloze =field_type->valuestring;
+        printf("%s\n",dane->podloze);
         status = 1;
         goto end;
 
@@ -150,8 +226,12 @@ char * make_request(char *url)
             //printf("TUTAJ:%s", chunk.response);
             TEST t;
             parse_json(chunk.response, &t);
-            wizualizacja(t.wartosc_x,t.wartosc_y,t.podloze,&z);
-            printf("t.x= %d\n",t.wartosc_x);
+            //my_function(t) tworzymy funkcje wizualizacja która pobjerze za argumrnt x y i field; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+           printf("t.x= %d\n",t.wartosc_x);
+           printf("t.y= %d\n",t.wartosc_y);
+
+            printf("pole= %s\n",t.podloze);
+            wizualizacja(t.wartosc_x,t.wartosc_y,t.podloze);
         }
  
         /* zawsze po sobie sprzątaj */
@@ -162,7 +242,7 @@ char * make_request(char *url)
 int info(char *token) {
  
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/token
-    char *url = (char*)malloc(sizeof(char)*100);
+    char *url = (char*)malloc(sizeof(char*));
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info");
     strcat(url,"/");
     strcat(url,token);
@@ -173,21 +253,19 @@ int info(char *token) {
  
 int move(char *token) {
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/move/token
-    char *url = (char*)malloc(sizeof(char)*100);
+    char *url = (char*)malloc(sizeof(char*));
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/move");
     strcat(url,"/");
     strcat(url,token);
     make_request(url);
-    printf("dupa1\n");
     free(url);
-    printf("dupa2\n");
     return 0;
 }
  
 int rotate(char *token, char *direction)
 {
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/rotate/token/direction
-    char *url = (char*)malloc(sizeof(char)*100);
+    char *url = (char*)malloc(sizeof(char*));
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/rotate");
     strcat(url,"/");
     strcat(url,token);
@@ -200,40 +278,49 @@ int rotate(char *token, char *direction)
  
 int main(int argc, char **argv)
 {
-   printf("witaj w misji rozpoznania terenu wroga :\n");
+  /* printf("witaj w misji rozpoznania terenu wroga :\n");
     printf("zasiądź za sterem czołgu i ruszaj na misję:\n");
     printf("sterowanie czołgiem:\n");
     printf("w -do przodu\n");
-    printf("s -do tyłu\n");
+    printf("s -do tyłu");
     printf("a -obrót w lewo\n");
     printf("d -obrót w prawo\n");
     printf("i -info\n");
-    printf("powodzenia\n");
+     printf("powodzenia\n");
     char znak;
-    macierz*m=wczytaj(1,1);
-    printf("%d %d\n",m->r,m->c);
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
-    for(int i=0;i<12;i++){
-           scanf(" %c",&znak);
+    znak = getchar();
     if (znak == 'w')
     move(swiat);
-    else if (znak == 's'){
+    else if (znak == 's')
+   {
         rotate(swiat,"right");
         rotate(swiat,"right");
          move(swiat);
    }
-    else if (znak == 'd')
+    else if (znak == 'r')
     rotate(swiat,"right");
-    else if (znak =='a')
+    else if (znak ='a')
     rotate(swiat,"left");
-    else if (znak =='i')
+    else if (znak ='i')
     info(swiat);
-    else if (znak =='r')
-    exit(0);
-    }
-
-
-
+*/
+    //char znak;
+    /*tu musimy 
+    zrobić macierz 1 na 1
+    teraz zapisujemy do pliku
+    usuwamy macierz*/
+    char *swiat=(char*)malloc(sizeof(char*));
+    strcpy(swiat,"qwerty_20");
+    move(swiat);
+    move(swiat);
+    move(swiat);
+    rotate(swiat,"right");
+    move(swiat);
     return 0;
 }
+
+//odeszliśmy od pomysłu ze sterowaniem wsadem
+//ponieważ nie moglśmy sobie poradzić z jednokrotnym
+//stworzeniem pliku początkowego
