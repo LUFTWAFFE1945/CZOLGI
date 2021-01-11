@@ -17,7 +17,87 @@ typedef struct Maciora {
     int c;
     int **tab;
 }maciora;
+typedef struct _Memory
+{
+    char *response;
+    size_t size;
+} Memory;
 
+maciora*utworz(){
+    maciora*m =(maciora*) malloc(sizeof(maciora));
+    m->r=1;
+    m->c=1;
+    m->tab = (int**) calloc(m->r, sizeof(int*));
+    for (int i=0;i<m->r;i++)
+    m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
+    m->tab[0][0]=0;
+    return m;
+}
+
+int plikIstnieje (char* nazwa){
+    FILE* plik;
+    plik = fopen(nazwa, "r");  
+    if (plik)
+    {
+        fclose(plik);
+        return 1;
+    }
+    return 0;
+}
+maciora*wczytaj(char*nazwa){
+    FILE* plik;
+    maciora*m =(maciora*) malloc(sizeof(maciora));
+    plik = fopen(nazwa, "r");  
+    fscanf(plik, "%d", &m->r);
+    fscanf(plik, "%d", &m->c);
+    m->tab = (int**) calloc(m->r, sizeof(int*));
+    for (int i=0;i<m->r;i++)
+    m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
+    // wczytanie
+    for (int i=(m->r)-1; i >=0; i--) 
+    {
+        for (int j=0; j < m->c; j++) 
+        {
+            fscanf(plik, "%d", &m->tab[i][j]);
+        }
+    }
+    fclose(plik);
+    return m;
+}
+
+void  uzupelnienie (Dane*d,maciora*m)
+{
+
+}
+static size_t write_callback(void *data, size_t size, size_t nmemb, void *userp)
+{
+    /* to jest rzeczywista liczba bajtów przekazanych przez curl */
+    size_t realsize = size * nmemb;
+ 
+    /* jawnie konwertujemy (void*) na naszą strukturę, bo wiemy, że będziemy ją tutaj otrzymywać */
+    Memory *mem = (Memory *) userp;
+ 
+    char *ptr = NULL;
+ 
+    /* Sprawdzamy czy pierwszy raz wywołujemy funkcję i trzeba zaalokować pamięć po raz pierwszy,
+    czy trzeba zrobić reallokację (która kopiuje automatycznie starą zawartość w nowe miejsce) */
+    if (mem->response != NULL)
+        ptr = realloc(mem->response, mem->size + realsize + 1);
+    else
+        ptr = malloc(mem->size + realsize + 1);
+ 
+    if (ptr == NULL)
+        return 0; /* brak pamięci! */
+ 
+    /* teraz zapamiętujemy nowy wskaźnik i doklejamy na końcu dane przekazane przez curl w 
+       obszarze pamięci wskazywanym przez data */
+    mem->response = ptr;
+    memcpy(&(mem->response[mem->size]), data, realsize);
+    mem->size += realsize;
+    mem->response[mem->size] = 0; // to na końcu dodajemy bo to w końcu string, i zawsze powinien się skończyć!
+ 
+    return realsize;
+}
 char * make_request(char *url)
 {
     CURL *curl;
@@ -103,27 +183,27 @@ Dane* interpret_response(const char* const chunk,Dane *dane)
     }
     return dane;
 }
-char* info(char *token, macira*p) {
+char* info(char *token, maciora*p) {
  
     char*chunk= (char*)malloc(sizeof(char)*1024);
     char *url = (char*)malloc(sizeof(char)*1024);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info");
     strcat(url,"/");
     strcat(url,token);
-    dane_z_odczytu=interpret_response(make_request(url),dane);
-    uzupełnienie(dzane_z_odczytu,p);
+    Dane*z;
+    uzupelnienie( interpret_response(make_request(url),z),p);
     free(url);
     return 0;
 }
  
-char* explore(char *token, macira*p) {
+char* explore(char *token, maciora*p) {
     char*chunk= (char*)malloc(sizeof(char)*1024);
     char *url = (char*)malloc(sizeof(char)*1024);
     strcpy(url,"http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/explore");
     strcat(url,"/");
     strcat(url,token);
-    dane_z_odczytu=interpret_response(make_request(url),dane);
-    uzupełnienie(dzane_z_odczytu,p);
+    Dane*z;
+    uzupelnienie( interpret_response(make_request(url),z),p);
     free(url);
     return 0;
 } 
@@ -154,18 +234,21 @@ char* rotate(char *token, char *direction)
 
 int main()
 {
-    Dane *dane=malloc(sizeof(Dane));
     char*chunk=(char*)malloc(sizeof(char*));
-    FILE *fin=fopen(nazwa_folderu,"r");
-    if(fin == 0) // plik istnieje
-    {
-    
+    char*nazwa_pliku="macierztestowa.txt";
+    struct macierz *plansza;
+    printf("%d\n",plikIstnieje(nazwa_pliku));
+    if(plikIstnieje(nazwa_pliku)==1){
+        plansza = wczytaj(nazwa_pliku);
     }
-    else //tworzę plik
-    {
+    else{
+        plansza = utworz();
+    }
 
-    }
-    Macierz *a;
-    a=wczytaj(fin);
-    algorytm( macierz_ogólne(maciora))
+
+
+}
+ 
+    //a=wczytaj(fin);
+   // algorytm( macierz_ogólne(maciora))
     //zapisz do pliku
