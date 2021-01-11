@@ -17,6 +17,8 @@ typedef struct test{
 typedef struct _macierz {
 int r; //wiersz
 int c; //kolumna
+int przesuniecie_x;
+int przesuniecie_y;
 int **tab;
 }macierz;
 
@@ -104,14 +106,17 @@ void zwolnij(macierz*m){
 void uzupelnij(macierz*m,int x,int y, char*pole){ ////to do poprawy
     //warunek realokacji 
     if(m->r < x)
-    m->r=x;
+        if(x> 0){
+        m->r=x;
+        m->tab = (int**) realloc (m->tab, sizeof(int*) * (m->r));   
+        }
     if(m->c < y)
-    m->c=y;  
-    //realokacja
-    m->tab = (int**) realloc (m->tab, sizeof(int*) * (m->r));
-    for (int i=0;i<m->r;i++)
+        if(y > 0){
+        m->c=y;  
+        for (int i=0;i<m->r;i++)
         m->tab[i] = (int*) realloc(m->tab[i], sizeof(int) * (m->c));
-         printf("%d %d\n",m->r,m->c);
+        }
+    printf("%d %d\n",m->r,m->c);
     //uzupelnienie macierzy
     if(pole = "grass")
     m->tab[x-1][y-1]=1;
@@ -135,8 +140,10 @@ int main(int argc, char **argv)
     else{
         plansza = utworz();
     }
-    uzupelnij(plansza,3,4,"trawa");
     zapisz(nazwa_pliku,plansza);
     zwolnij(plansza);
     return 0;
 }
+
+
+//w tankv9 do maciory dodać te kurwy przesuniecie;
