@@ -20,6 +20,12 @@ int c; //kolumna
 int **tab;
 }macierz;
 
+typedef struct dane{
+    int x[3];
+    int y[3];
+    char* field[3]; 
+}Dane;
+
 int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
 {
     const cJSON *payload = NULL;
@@ -166,11 +172,13 @@ char * make_request(char *url)
         curl_easy_cleanup(curl);
     }
 }
-void uzupelnienie(dane*odczyt,macierz*plansza){
+void uzupelnienie(Dane*odczyt,macierz*plansza){
 
 
-    for(i=0,i<3,i++)
+    for(int i=0;i<3;i++){
     uzupelnij(plansza,odczyt[i]->x,odczyt[i]->y,odczyt[i]->pole);
+    }
+    
 }
 
 
