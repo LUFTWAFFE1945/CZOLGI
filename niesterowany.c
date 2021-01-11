@@ -166,7 +166,16 @@ char * make_request(char *url)
         curl_easy_cleanup(curl);
     }
 }
-int info(char *token) {
+void uzupelnienie(dane*odczyt,macierz*plansza){
+
+
+    for(i=0,i<3,i++)
+    uzupelnij(plansza,odczyt[i]->x,odczyt[i]->y,odczyt[i]->pole);
+}
+
+
+
+int explore(char *token,macierz*plansza) {
  
     // http://edi.iem.pw.edu.pl:30000/worlds/api/v1/worlds/info/token
     char *url = (char*)malloc(sizeof(char*)*1024);
@@ -175,6 +184,7 @@ int info(char *token) {
     strcat(url,token);
     make_request(url);
     free(url);
+    //uzupelnienie(odczyt,plansza);
     return 0;
 }
  
@@ -293,7 +303,12 @@ void uzupelnij(macierz*m,int x,int y, char*pole){ ////to do poprawy
 
 }
 
+void algorytm(char*swiat,macierz*m){
 
+
+
+
+}
 
 int main(int argc, char **argv)
 {
@@ -307,15 +322,13 @@ int main(int argc, char **argv)
        
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
-    rotate(swiat,"right");
-    rotate(swiat,"right");
-    move(swiat);
-    info(swiat);
-    move(swiat);
-    info(swiat);
-    move(swiat);
-    rotate(swiat,"right");
-    move(swiat);
+    algorytm(swiat,plansza);
+
+
+
+
+
+
     free(swiat);
 
 
