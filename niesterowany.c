@@ -164,7 +164,6 @@ char * make_request(char *url)
            printf("t.y= %d\n",t.wartosc_y);
 
             printf("pole= %s\n",t.podloze);
-            wizualizacja(t.wartosc_x,t.wartosc_y,t.podloze);
         }
  
         /* zawsze po sobie sprzątaj */
@@ -176,7 +175,7 @@ void uzupelnienie(Dane*odczyt,macierz*plansza){
 
 
     for(int i=0;i<3;i++){
-    uzupelnij(plansza,odczyt[i]->x,odczyt[i]->y,odczyt[i]->pole);
+    uzupelnij(plansza,odczyt->x[i],odczyt->y[i],odczyt->field[i]);
     }
     
 }
@@ -327,24 +326,11 @@ int main(int argc, char **argv)
     else{
         plansza = utworz();
     }
-       
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
     algorytm(swiat,plansza);
-
-
-
-
-
-
     free(swiat);
-
-
     zapisz("macierz.txt",plansza);
     zwolnij(plansza);
     return 0;
 }
-
-//odeszliśmy od pomysłu ze sterowaniem wsadem
-//ponieważ nie moglśmy sobie poradzić z jednokrotnym
-//stworzeniem pliku początkowego
