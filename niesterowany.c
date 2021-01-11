@@ -20,66 +20,6 @@ int c; //kolumna
 int **tab;
 }macierz;
 
-void wizualizacja(int x, int y, char*pole){
-    // alokacja
-    FILE*plik=fopen("macierz.txt","r");
-    macierz *m;
-    printf("%d %d %s\n",x,y,pole);
-    m=(macierz*) malloc(sizeof(macierz));
-    fscanf(plik, "%d", &m->r);
-    fscanf(plik, "%d", &m->c);
-    m->tab = (int**) calloc(m->r, sizeof(int*));
-    for (int i=0;i<m->r;i++)
-    m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
-    // wczytanie
-    for (int i=(m->r)-1; i >=0; i--) 
-    {
-        for (int j=0; j < m->c; j++) 
-        {
-            fscanf(plik, "%d", &m->tab[i][j]);
-        }
-    }
-    printf("%d %d\n",m->r,m->c);
-    //warunek realokacji 
-    if(m->r < x)
-    m->r=x;
-    if(m->c < y)
-    m->c=y;  
-    printf("%d %d\n",m->r,m->c); //pokazuje aktualne rozmiary macierzy
-    //realokacja
-    m->tab = (int**) realloc (m->tab, sizeof(int*) * (m->r));
-    for (int i=0;i<m->r;i++)
-        m->tab[i] = (int*) realloc(m->tab[i], sizeof(int) * (m->c));
-         printf("%d %d\n",m->r,m->c);
-    //uzupelnienie macierzy
-    if(pole = "grass")
-    m->tab[x-1][y-1]=1;
-    if(pole == "sand")
-    m->tab[x-1][y-1]=2;
-    if(pole == "wall")
-    m->tab[x-1][y-1]=3;
-    printf("%d %d\n",m->r,m->c);
-    FILE*plik2=fopen("macierz.txt","w");
-    fprintf(plik2,"%d\n%d\n",m->r,m->c);
-    for(int i = (m->r)-1; i>=0; i--)
-        for(int j = 0; j <m->c; j++)
-        {
-            fprintf(plik2,"%d\t",m->tab[i][j]);
-            if(j+1 == m->c)
-            fprintf(plik2,"\n");
-        }  
-    fclose(plik2);
-    //zwolnienie macierzy
-    for (int i=0;i<m->r;i++) 
-    free(m->tab[i]);
-    free(m->tab);
-    free(m); 
-    //zamkniecie nie wiem czemu tu ale jak dam wczesniej to program spada z rowerka
-    fclose(plik);
-  
-
-}
-
 int parse_json(const char * const answer, TEST*dane)  // chan reques za answer
 {
     const cJSON *payload = NULL;
@@ -262,13 +202,109 @@ int rotate(char *token, char *direction)
     free(url);
     return 0;
 }
- 
+
+macierz*wczytaj(char*nazwa){
+    FILE* plik;
+    macierz*m =(macierz*) malloc(sizeof(macierz));
+    plik = fopen(nazwa, "r");  
+    fscanf(plik, "%d", &m->r);
+    fscanf(plik, "%d", &m->c);
+    m->tab = (int**) calloc(m->r, sizeof(int*));
+    for (int i=0;i<m->r;i++)
+    m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
+    // wczytanie
+    for (int i=(m->r)-1; i >=0; i--) 
+    {
+        for (int j=0; j < m->c; j++) 
+        {
+            fscanf(plik, "%d", &m->tab[i][j]);
+        }
+    }
+    fclose(plik);
+    return m;
+}
+
+macierz*utworz(){
+    macierz*m =(macierz*) malloc(sizeof(macierz));
+    m->r=1;
+    m->c=1;
+    m->tab = (int**) calloc(m->r, sizeof(int*));
+    for (int i=0;i<m->r;i++)
+    m->tab[i] = (int*) calloc(m->c, sizeof(int)); 
+    m->tab[0][0]=0;
+    return m;
+}
+
+int plikIstnieje (char* nazwa)
+{
+    FILE* plik;
+    plik = fopen(nazwa, "r");  
+    if (plik)
+    {
+        fclose(plik);
+        return 1;
+    }
+    fclose(plik);
+    return 0;
+}
+
+void zapisz(char*nazwa,macierz*m){  
+    FILE*plik=fopen("macierz.txt","w");
+    fprintf(plik,"%d\n%d\n",m->r,m->c);
+    for(int i = (m->r)-1; i>=0; i--)
+        for(int j = 0; j <m->c; j++)
+        {
+            fprintf(plik,"%d\t",m->tab[i][j]);
+            if(j+1 == m->c)
+            fprintf(plik,"\n");
+        }  
+    fclose(plik);
+
+
+}
+
+void zwolnij(macierz*m){
+    for (int i=0;i<m->r;i++) 
+    free(m->tab[i]);
+    free(m->tab);
+    free(m); 
+}
+
+void uzupelnij(macierz*m,int x,int y, char*pole){ ////to do poprawy
+    //warunek realokacji 
+    if(m->r < x)
+    m->r=x;
+    if(m->c < y)
+    m->c=y;  
+    //realokacja
+    m->tab = (int**) realloc (m->tab, sizeof(int*) * (m->r));
+    for (int i=0;i<m->r;i++)
+        m->tab[i] = (int*) realloc(m->tab[i], sizeof(int) * (m->c));
+         printf("%d %d\n",m->r,m->c);
+    //uzupelnienie macierzy
+    if(pole = "grass")
+    m->tab[x-1][y-1]=1;
+    if(pole == "sand")
+    m->tab[x-1][y-1]=2;
+    if(pole == "wall")
+    m->tab[x-1][y-1]=3;
+    printf("%d %d\n",m->r,m->c);
+
+
+}
+
+
+
 int main(int argc, char **argv)
 {
-    FILE*plik=fopen("macierz.txt","w+");
-    fprintf(plik,"1\n1\n1\n");
-    fclose(plik);
-    char znak;
+    struct macierz *plansza;
+    if(plikIstnieje("macierz.txt")==1){
+        plansza = wczytaj("macierz.txt");
+    }
+    else{
+        plansza = utworz();
+    }
+       
     char *swiat=(char*)malloc(sizeof(char*));
     strcpy(swiat,"qwerty_20");
     rotate(swiat,"right");
@@ -281,6 +317,10 @@ int main(int argc, char **argv)
     rotate(swiat,"right");
     move(swiat);
     free(swiat);
+
+
+    zapisz("macierz.txt",plansza);
+    zwolnij(plansza);
     return 0;
 }
 
