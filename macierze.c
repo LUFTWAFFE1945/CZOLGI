@@ -145,5 +145,3 @@ int main(int argc, char **argv)
     return 0;
 }
 
-
-//w tankv9 do maciory dodać te kurwy przesuniecie;
