@@ -20,6 +20,8 @@ typedef struct Maciora {
     int r;
     int c;
     int **tab;
+    int zwrot_lufy;
+    
 }maciora;
 typedef struct _Memory
 {
@@ -179,9 +181,11 @@ Dane* interpret_response(const char* const chunk,Dane *dane)
         else if (current_x != NULL) {
             cJSON *current_y = cJSON_GetObjectItemCaseSensitive(payload, "current_y");
             cJSON *field_type =  cJSON_GetObjectItemCaseSensitive(payload, "field_type");
+            cJSON *direction =  cJSON_GetObjectItemCaseSensitive(payload, "direction");
             dane->x[0]=current_x->valueint;
             dane->y[0]=current_y->valueint;
             dane->field[0] =field_type->valuestring;
+            dane->kierunek_lufy = 
         }
  
     }
